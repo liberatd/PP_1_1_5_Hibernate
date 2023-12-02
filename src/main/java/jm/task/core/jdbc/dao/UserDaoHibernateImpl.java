@@ -1,11 +1,12 @@
 package jm.task.core.jdbc.dao;
 
+
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,7 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             String sql = "CREATE TABLE IF NOT EXISTS USER (ID INT AUTO_INCREMENT PRIMARY KEY, NAME VARCHAR(45) NOT NULL, LASTNAME VARCHAR(45) NOT NULL, AGE TINYINT)";
-            Query<Void> query = session.createSQLQuery(sql);
-            query.executeUpdate();
+            session.createSQLQuery(sql).addEntity(User.class).executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             if(transaction != null) {
@@ -38,8 +38,7 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             String sql = "DROP TABLE IF EXISTS USER";
-            Query<Void> query = session.createSQLQuery(sql);
-            query.executeUpdate();
+            session.createSQLQuery(sql).addEntity(User.class).executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -48,6 +47,8 @@ public class UserDaoHibernateImpl implements UserDao {
             e.printStackTrace();
         }
     }
+
+
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
@@ -82,7 +83,7 @@ public class UserDaoHibernateImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
         try (Session session = Util.getSessionFactory().openSession()) {
-            userList = session.createQuery("FROM User").list();
+            userList = session.createQuery("FROM User", User.class).list();
         } catch (Exception e) {
             e.printStackTrace();
         }
